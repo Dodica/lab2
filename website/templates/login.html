@@ -1,5 +1,6 @@
-{% extends "base.html" %} {% block title %}Login{% endblock %} {% block content
-%}
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
 <form method="POST">
   <h3 align="center">Login</h3>
   <div class="form-group">
@@ -11,18 +12,53 @@
       name="email"
       placeholder="Enter email"
     />
-  </div>
   <div class="form-group">
     <label for="password">Password</label>
+    <div class="input-group">
+      <input
+        type="password"
+        class="form-control"
+        id="password"
+        name="password"
+        placeholder="Enter password"
+      />
+  </div>
+  <div class="form-check">
     <input
-      type="password"
-      class="form-control"
-      id="password"
-      name="password"
-      placeholder="Enter password"
-    />
+      type="checkbox"
+      class="form-check-input"
+      id="showPasswordRules"
+      name="showPasswordRules"
+      />
+    <label class="form-check-label" for="showPasswordRules">
+      Include broken authentication vulnerability
+    </label>
+  </div>
+  <div class="password-rules" id="passwordRules" style="display: none;">
   </div>
   <br />
   <button type="submit" class="btn btn-primary">Login</button>
 </form>
+
+<script>
+  const togglePassword = document.getElementById("togglePassword");
+  const passwordInput = document.getElementById("password");
+  const passwordIcon = document.getElementById("passwordIcon");
+  const showPasswordRules = document.getElementById("showPasswordRules");
+  const passwordRules = document.getElementById("passwordRules");
+
+  togglePassword.addEventListener("click", function () {
+    if (passwordInput.type === "password") {
+      passwordInput.type = "text";
+      passwordIcon.className = "fa fa-eye-slash";
+    } else {
+      passwordInput.type = "password";
+      passwordIcon.className = "fa fa-eye";
+    }
+  });
+
+  showPasswordRules.addEventListener("change", function () {
+    passwordRules.style.display = showPasswordRules.checked ? "block" : "none";
+  });
+</script>
 {% endblock %}

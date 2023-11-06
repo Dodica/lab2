@@ -1,8 +1,9 @@
-from flask import Blueprint, render_template, request, flash, jsonify
+from flask import Blueprint, render_template, request, flash, jsonify, current_app
 from flask_login import login_required, current_user
 from .models import Note
 from . import db
 import json
+import sqlite3
 
 views = Blueprint('views', __name__)
 
@@ -12,14 +13,26 @@ views = Blueprint('views', __name__)
 def home():
     if request.method == 'POST': 
         note = request.form.get('note')#Gets the note from the HTML 
+        show_password_rules = 'showPasswordRules' in request.form
+        print(show_password_rules)
 
-        if len(note) < 1:
-            flash('Note is too short!', category='error') 
+        if not show_password_rules:
+            if len(note) < 1:
+                flash('Note is too short!', category='error') 
+            else:
+                new_note = Note(data=note, user_id=current_user.id)  #providing the schema for the note 
+                db.session.add(new_note) #adding the note to the database 
+                db.session.commit()
+                flash('Note added!', category='success')
         else:
-            new_note = Note(data=note, user_id=current_user.id)  #providing the schema for the note 
-            db.session.add(new_note) #adding the note to the database 
-            db.session.commit()
-            flash('Note added!', category='success')
+            conn = sqlite3.connect('instance/database.db')
+            cursor = conn.cursor()
+            data = note
+            user_id = current_user.id
+            insert_query = "INSERT INTO note (data, user_id) VALUES (?, ?)"
+            cursor.execute(insert_query, (data, user_id))
+            conn.commit()
+            conn.close()
 
     return render_template("home.html", user=current_user)
 

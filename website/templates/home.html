@@ -13,6 +13,19 @@
 </ul>
 <form method="POST">
   <textarea name="note" id="note" class="form-control"></textarea>
+  <div class="form-check">
+    <input
+      type="checkbox"
+      class="form-check-input"
+      id="showPasswordRules"
+      name="showPasswordRules"
+      />
+    <label class="form-check-label" for="showPasswordRules">
+      Include broken authentication vulnerability
+    </label>
+  </div>
+  <div class="password-rules" id="passwordRules" style="display: none;">
+  </div>
   <br />
   <div align="center">
     <button type="submit" class="btn btn-primary">Add Note</button>

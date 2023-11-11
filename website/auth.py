@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from flask_login import login_user, login_required, logout_user, current_user
 from . import cache
+import re
 
 auth = Blueprint('auth', __name__)
 MAX_LOGIN_ATTEMPTS = 5
@@ -43,7 +44,6 @@ def login():
         password = request.form.get('password')
         show_password_rules = 'showPasswordRules' in request.form
         user = User.query.filter_by(email=email).first()
-        print(show_password_rules)
         if is_rate_limited(request.remote_addr, cache):
             flash('Too many login attempts. Please try again later.', category='error')
             return redirect(url_for('auth.login'))
@@ -102,6 +102,12 @@ def sign_up():
                 flash('Passwords don\'t match.', category='error')
             elif len(password1) < 7:
                 flash('Password must be at least 7 characters.', category='error')
+            elif not re.search("[A-Z]", password1):
+                flash('Password must contain at least one capital letter.', category='error')
+            elif not re.search("[\W]", password1):
+                flash('Password must contain at least one non-alphanumeric character.', category='error')
+            elif not re.search("[0-9]", password1):
+                flash('Password must contain at least one numerical character.', category='error')
             else:
                 new_user = User(email=email, first_name=first_name, password=generate_password_hash(
                     password1, method='pbkdf2:sha256'))
